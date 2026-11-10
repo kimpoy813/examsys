@@ -14,14 +14,15 @@ export async function POST(
   try {
     const { examId } = await params;
     const body = await req.json().catch(() => ({}));
-    const studentId = body.studentId || 'student-alex';
+    const studentName = body.studentName || 'Student';
+    const studentEmail = body.studentEmail;
 
     if (body.reset === true) {
-      const data = resetStudentExamAttempt(examId, studentId);
+      const data = resetStudentExamAttempt(examId, studentName, studentEmail);
       return NextResponse.json(data);
     }
 
-    const data = startOrResumeSubmission(examId, studentId);
+    const data = startOrResumeSubmission(examId, studentName, studentEmail);
     return NextResponse.json(data);
   } catch (err) {
     return NextResponse.json(
@@ -44,7 +45,7 @@ export async function PUT(
     return NextResponse.json({ submission: updated });
   } catch (err) {
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Autosave rejected' },
+      { error: err instanceof Error ? err.message : 'Autosave failed' },
       { status: 400 }
     );
   }
@@ -64,7 +65,7 @@ export async function PATCH(
     return NextResponse.json(result);
   } catch (err) {
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Failed to finalize submission' },
+      { error: err instanceof Error ? err.message : 'Failed to submit exam' },
       { status: 400 }
     );
   }

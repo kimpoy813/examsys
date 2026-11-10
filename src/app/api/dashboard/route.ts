@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createNewExam, getDashboardSnapshot } from '@/lib/store';
-import { isNeonConfigured } from '@/db';
+import { createNewExam, deleteExamById, getDashboardSnapshot } from '@/lib/store';
 
 export async function GET(req: NextRequest) {
-  const studentId = req.nextUrl.searchParams.get('studentId') || 'student-alex';
-  const snapshot = getDashboardSnapshot(studentId);
-  return NextResponse.json({
-    ...snapshot,
-    infrastructure: {
-      runtime: 'Vercel Serverless / Next.js 15 App Router',
-      databaseMode: isNeonConfigured ? 'Neon Serverless Postgres (Connected)' : 'Neon Ready (Seeded In-Memory Pool)',
-    },
-  });
+  const studentName = req.nextUrl.searchParams.get('studentName') || undefined;
+  const studentEmail = req.nextUrl.searchParams.get('studentEmail') || undefined;
+  const snapshot = getDashboardSnapshot(studentName, studentEmail);
+  return NextResponse.json(snapshot);
 }
 
 export async function POST(req: NextRequest) {
@@ -19,7 +13,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     if (!body.title || !Array.isArray(body.questions) || body.questions.length === 0) {
       return NextResponse.json(
-        { error: 'Exam title and at least one question are required.' },
+        { error: 'Please provide an exam title and at least one question.' },
         { status: 400 }
       );
     }
@@ -28,6 +22,22 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'Failed to create exam' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const examId = req.nextUrl.searchParams.get('examId');
+    if (!examId) {
+      return NextResponse.json({ error: 'examId is required' }, { status: 400 });
+    }
+    deleteExamById(examId);
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : 'Failed to delete exam' },
       { status: 500 }
     );
   }
