@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'ExamSys — Proctored Student Assessment & Analytics Platform (Vercel + Neon)',
+  title: 'ExamSys — Minimalist Online Assessment & Proctoring',
   description:
-    'Online Student Examination, Anti-Cheating Proctoring & Learning Gap Analytics Platform built with Next.js App Router and Neon Serverless Postgres.',
+    'Clean, distraction-free student examination and proctoring platform.',
 };
 
 export default function RootLayout({
@@ -13,8 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
-      <body className="min-h-screen bg-slate-950 text-slate-100">{children}</body>
+    <html lang="en">
+      <body className="min-h-screen bg-zinc-50 text-zinc-900">{children}</body>
     </html>
   );
 }
